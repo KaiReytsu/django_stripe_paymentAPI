@@ -1,0 +1,26 @@
+version: "3.3"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    expose:
+      - "5432"
+    ports:
+      - "5433:5432"
+  django:
+    build: .
+    command: >
+        bash -c "pipenv run python manage.py migrate
+        && pipenv run python manage.py runserver 0.0.0.0:8000 --insecure"
+    volumes:
+      - .:/djangostripe
+    ports:
+      - "0.0.0.0:8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
